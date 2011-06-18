@@ -404,13 +404,16 @@ class TextStringObject(unicode, PdfObject):
             obj = ByteStringObject(bytearr)
             obj.writeToStream(stream, None)
         else:
-            stream.write("(")
-            for c in bytearr:
-                if not c.isalnum() and c != ' ':
-                    stream.write("\\%03o" % ord(c))
-                else:
-                    stream.write(c)
-            stream.write(")")
+            if bytearr == "/Page" :     # correction by Dysmas : otherwise writes (\057Page) instead of /Page, which is valid but not supported by poppler
+                stream.write(bytearr)
+            else :
+                stream.write("(")
+                for c in bytearr:
+                    if not c.isalnum() and c != ' ':
+                        stream.write("\\%03o" % ord(c))
+                    else:
+                        stream.write(c)
+                stream.write(")")
 
 
 class NameObject(str, PdfObject):
@@ -797,4 +800,3 @@ for i in xrange(256):
         continue
     assert char not in _pdfDocEncoding_rev
     _pdfDocEncoding_rev[char] = i
-
